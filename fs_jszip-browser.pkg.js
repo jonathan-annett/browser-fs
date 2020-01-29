@@ -1,6 +1,7 @@
 (function($N){
-$N[0][$N[1]]=(function($N){
+
 /*/home/jonathanmaxannett/browser-fs/fs_jszip-browser.js*/
+$N[0][$N[1]]=(function($N){
 function start_fs_jszip(url,cb) {
 
         var self = {
