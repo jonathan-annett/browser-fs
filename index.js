@@ -402,34 +402,38 @@ function selfTest (cb) {
 if (process.mainModule===module) {
 
     if (process.argv.indexOf("--build")>0) {
-        require("simple-package-wrap").buildMulti([
-            {
-                mod : "JSZip",
-                js  : path.join(path.dirname(require.resolve("jszip")),"..","dist","jszip.js"),
-                pkg : __dirname+"/jszip.pkg.js",
-                min : __dirname+"/jszip.min.js",
-            },
 
-            {
-                mod : "JSUtils",
-                js  : path.join(path.dirname(require.resolve("jszip-utils")),"..","dist","jszip-utils.min.js"),
-                pkg : __dirname+"/jszip-utils.pkg.js",
-                min : __dirname+"/jszip-utils.min.js",
-            },
+        var
+        pkgWrap =require("simple-package-wrap"),
+        pkgs = [
+                  {
+                       mod : "JSZip",
+                       js  : path.join(path.dirname(require.resolve("jszip")),"..","dist","jszip.js"),
+                       pkg : __dirname+"/jszip.pkg.js",
+                       min : __dirname+"/jszip.min.js",
+                   },
 
-            {
-                mod : "fs_js_zip",
-                js  : __dirname+"/fs_jszip.js"
-            },
+                   {
+                       mod : "JSUtils",
+                       js  : path.join(path.dirname(require.resolve("jszip-utils")),"..","dist","jszip-utils.min.js"),
+                       pkg : __dirname+"/jszip-utils.pkg.js",
+                       min : __dirname+"/jszip-utils.min.js",
+                   },
 
-            {
-                mod : "start_fs",
-                js  : __dirname+'/fs_jszip-browser.js'
-            }
+                   {
+                       mod : "fs_js_zip",
+                       js  : __dirname+"/fs_jszip.js"
+                   },
 
-            ],
+                   {
+                       mod : "start_fs",
+                       js  : __dirname+'/fs_jszip-browser.js'
+                   }
 
-            "./browser-fs.js");
+                   ];
+        pkgWrap.buildMulti(pkgs, "./browser-fs.js");
+        pkgWrap.buildNamed(pkgs, "./browser-fs-named.js");
+
     } else {
         selfTest(function(){ });
     }
