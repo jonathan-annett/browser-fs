@@ -1,26 +1,26 @@
 {
-  "author": {
-    "name": "Jonathan Annett",
-    "url": "http://github.com/jonathan-annett",
-    "email": "jonathan.max.annett@gmail.com"
-  },
-  "contributors": [],
-  "description": "newly created repo",
-  "license": "MIT",
-  "dependencies": {
-    "jszip": "^3.2.2",
-    "jszip-utils": "^0.1.0",
-    "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#c0fdfddc2badb5f9eb753781713070ec54dd47bc",
-    "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#028aa461272b32e31fdbce3759fed7eb1fc5132d"
-  },
-  "devDependencies": {},
-  "scripts": {},
-  "keywords": [],
-  "main": "index.js",
-  "name": "browser-fs",
-  "repository": {
-    "url": "https://github.com/jonathan-annett/browser-fs",
-    "type": "git"
-  },
-  "version": "0.0.1"
+    "author": {
+        "name": "Jonathan Annett",
+        "url": "http://github.com/jonathan-annett",
+        "email": "jonathan.max.annett@gmail.com"
+    },
+    "contributors": [],
+    "description": "newly created repo",
+    "license": "MIT",
+    "dependencies": {
+        "jszip": "^3.2.2",
+        "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#1e628f3c7dfa8d9527b87eebf152d2294baab5a7",
+        "jszip-utils": "^0.1.0",
+        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#dc36a55c0d397c0de65ea2dfab333e5b994b38b4"
+    },
+    "devDependencies": {},
+    "scripts": {},
+    "keywords": [],
+    "main": "index.js",
+    "name": "browser-fs",
+    "repository": {
+        "url": "https://github.com/jonathan-annett/browser-fs",
+        "type": "git"
+    },
+    "version": "0.0.1"
 }
