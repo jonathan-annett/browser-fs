@@ -8,11 +8,14 @@
   "description": "newly created repo",
   "license": "MIT",
   "dependencies": {
+    "jszip": "^3.2.2",
+    "jszip-utils": "^0.1.0",
+    "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#c0fdfddc2badb5f9eb753781713070ec54dd47bc",
+    "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#028aa461272b32e31fdbce3759fed7eb1fc5132d"
   },
   "devDependencies": {},
   "scripts": {},
-  "keywords": [
-  ],
+  "keywords": [],
   "main": "index.js",
   "name": "browser-fs",
   "repository": {
