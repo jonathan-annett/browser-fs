@@ -4,9 +4,86 @@ module.exports  = {
     process : null,
 
     start    : start,
-    selfTest : selfTest
+    selfTest : selfTest,
+
+
+    browser_path     : __dirname + "/browser-fs.pkg.js",
+    browser_min_path : __dirname + "/browser-fs.min.js",
 
 };
+
+var defProp = Object.defineProperties.bind(this,module.exports);
+var ECProp = function (x,v){
+    var p = {};
+    p[x]={enumerable:true,configurable:true};
+    switch (typeof v) {
+        case 'undefined':break;
+        case 'function' : p[x][v.name]=v;break;
+        default : p[x].value = v;
+    }
+    return p;
+};
+
+function makeSourceSwizzler(browser) {
+    var prop_name = browser+"_src";
+    var file_name_prop = browser+"_path";
+    var cached ;
+
+    // once we have a valid cache, respond (optionally via callbacl with data)
+    var cachedProp =  ECProp( prop_name,
+                              function get(cb) {
+                                  return typeof cb==='function' ? cb(cached) : cached;
+                              }
+                      );
+
+    // first time the gerrer is acessed (or after a call to clear), we attempt to read the
+    // file from disk. read mode is based on presence of a callback
+    var swizzlerProp = ECProp(
+                               prop_name,
+                               function get(cb) {
+
+                                   if (typeof cb==='function') {
+                                       fs.readFile( module.exports[ file_name_prop ],"utf8", function(err,text){
+                                           if (err) return cb(err);
+                                           // since there was no error, assumem the text is valid to cache
+                                           cached = text;
+                                           // swizzle out this function in favour of the cached version
+                                           delete module.exports[prop_name];
+                                           defProp(cachedProp );
+                                           // and return freshly read cache to caller via callback
+                                           return cb (undefined,cached);
+                                       });
+                                   } else {
+                                       cached = fs.readFileSync( module.exports[ file_name_prop ],"utf8");
+                                       // if we get this far, and have not thrown, the cache will updated.
+
+                                       // swizzle out this function in favour of the cached version
+                                       delete module.exports[prop_name];
+                                       defProp(cachedProp );
+                                       // and return freshly read cache to caller via return
+                                       return cached;
+                                   }
+                               }
+                        );
+
+    if (module.exports[prop_name]) {
+        delete module.exports[prop_name];
+    }
+
+    defProp(swizzlerProp);
+
+    return {
+        clear : function () {
+            cached = null;
+            delete module.exports[prop_name];
+            defProp(swizzlerProp);
+        }
+    }
+}
+
+
+makeSourceSwizzler("browser");
+makeSourceSwizzler("browser_min");
 
 var
 
