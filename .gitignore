@@ -1,0 +1,10 @@
+*-repo.json
+.git_hash
+.zedstate
+jszip-utils.*
+jszip.min.js
+jszip.pkg.js
+jszip_test.zip
+node_modules/
+package-lock.json
+rollback.package.json
