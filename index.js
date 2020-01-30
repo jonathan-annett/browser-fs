@@ -432,7 +432,7 @@ if (process.mainModule===module) {
 
                    ];
         //pkgWrap.buildMulti(pkgs, "./browser-fs.js");
-        pkgWrap.buildNamed(pkgs, "./browser-fs-named.js",function(err,list,built,preBuilt){
+        pkgWrap.buildNamed(pkgs, __dirname+"/browser-fs-named.js",function(err,list,built,preBuilt){
 
             console.log({err,list,built,preBuilt});
 
