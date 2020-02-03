@@ -8,7 +8,24 @@ var
                 filename = path.resolve("/home/jonathanmaxannett/browser-fs/browser-fs.pkg.zip"),
                 jszip_filename = filename.replace(/\.zip$/,'.jszip'),
                 pako_loader_fn = filename.replace(/\.zip$/,'.pako-loader.js'),
-                pako_html_fn = filename.replace(/\.zip$/,'.pako-tester.html');
+                pako_html_fn = filename.replace(/\.zip$/,'.pako-tester.html'),
+                //chromebooks do something funky with localhost under penguin/crostini, so help a coder out....
+                hostname = isChromebook() ? "penguin.termina.linux.test" : "localhost",
+                child_process           = require("child_process");
+
+                function isChromebook() {
+                    var os = require("os");
+                    if (os.hostname()==="penguin" && os.platform()==="linux") {
+                        var run=require("child_process").execSync;
+                        try {
+                            var cmd = run ("which systemd-detect-virt").toString().trim();
+                            return (run(cmd).toString().trim()==="lxc");
+                        } catch (e) {
+
+                        }
+                    }
+                    return false;
+                }
 
                 fs.writeFileSync(pako_html_fn,[
                     "<html>",
@@ -24,4 +41,8 @@ var
                 app.use("/"+path.basename(pako_loader_fn), express.static(pako_loader_fn));
                 app.get("/", express.static(pako_html_fn));
 
-                app.listen(3000);
+                var listener = app.listen(3000, function() {
+                    var url =  'http://'+hostname+':' + listener.address().port + "/";
+                    console.log('goto '+url);
+                    child_process.spawn("xdg-open",[url]);
+                });
