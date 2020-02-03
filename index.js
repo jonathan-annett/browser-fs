@@ -432,7 +432,13 @@ if (process.mainModule===module) {
 
                    ];
         pkgWrap.buildNamed(pkgs, __dirname+"/browser-fs.js",function(err,list,built,preBuilt){
-            pkgWrap.createZipLoader(__dirname+"/browser-fs.pkg.zip"); 
+
+            pkgWrap.createPakoLoader(
+                __dirname+"/browser-fs.pkg.zip",
+                "browserFSLoaded",
+                __dirname+"/browser-fs.min.js"
+            );
+
         });
 
     } else {
