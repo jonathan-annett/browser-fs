@@ -10,7 +10,7 @@ function toArrayBuffer(buf) {
                 }
 
                 var
-                nodeBuf  = require("fs").readFileSync("./test.jszip"),
+                nodeBuf  = require("fs").readFileSync("/home/jonathanmaxannett/browser-fs/browser-fs.pkg.jszip"),
                 arrayBuf = toArrayBuffer(nodeBuf)
 
                 bootload(arrayBuf,global,function (err,zip){
