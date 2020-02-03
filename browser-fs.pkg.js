@@ -11371,6 +11371,9 @@ module.exports = typeof setImmediate === 'function' ? setImmediate :
 
 },{}]},{},[10])(10)
 });
+
+/*pre-packaged jszip.js end*/
+
 /* jshint ignore:end */
 })($N,$N[$E],$N[$E]);return $N[$E];})({},'exports');
 

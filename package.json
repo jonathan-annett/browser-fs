@@ -9,9 +9,9 @@
     "license": "MIT",
     "dependencies": {
         "jszip": "^3.2.2",
-        "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#50cfe7a12c3bf976602adba2bb123d5ad728cc61",
+        "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#a6d8373f1785cc632897fcd639cab0fc487c4a45",
         "jszip-utils": "^0.1.0",
-        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#ee95b45733d998d3be81d96989fcc356743a1e42"
+        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#07bbb0a44e298f467eb4948c978a85c6f15231e5"
     },
     "devDependencies": {},
     "scripts": {},
