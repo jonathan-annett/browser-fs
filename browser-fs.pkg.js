@@ -12628,23 +12628,7 @@ function fs_JSZip (exports,data,zipWrap,JSZip,nodePath,cb) {
                 },
                 "_toUnixTimestamp": {
                     "value": function _toUnixTimestamp(time, name = 'time') {
-                        var __native = function toUnixTimestamp(time, name = 'time') {
-                          // eslint-disable-next-line eqeqeq
-                          if (typeof time === 'string' && +time == time) {
-                            return +time;
-                          }
-                          if (Number.isFinite(time)) {
-                            if (time < 0) {
-                              return Date.now() / 1000;
-                            }
-                            return time;
-                          }
-                          if (isDate(time)) {
-                            // Convert to 123.456 UNIX timestamp
-                            return time.getTime() / 1000;
-                          }
-                          throw new ERR_INVALID_ARG_TYPE(name, ['Date', 'Time in seconds'], time);
-                        };
+                        throw new Error ("not implemented");
                 },
                     "configurable": true,
                     "enumerable": true
