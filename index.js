@@ -415,7 +415,7 @@ if (process.mainModule===module) {
 
                    {
                        mod : "JSUtils",
-                       js  : path.join(path.dirname(require.resolve("jszip-utils")),"..","dist","jszip-utils.min.js"),
+                       js  : path.join(path.dirname(require.resolve("jszip-utils")),"..","dist","jszip-utils.js"),
                        pkg : __dirname+"/jszip-utils.pkg.js",
                        min : __dirname+"/jszip-utils.min.js",
                    },

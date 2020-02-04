@@ -27,19 +27,24 @@ var
                     return false;
                 }
 
-                fs.writeFileSync(pako_html_fn,[
-                    "<html>",
-                    "<head></head>",
-                    "<body>",
-                    "it all happens in the console.",
-                    '<script src="/'+path.basename(pako_loader_fn)+'"></script>',
-                    "</body>",
-                    "</html>",
-                    ].join("\n"));
+                var html = [
+                           "<html>",
+                           "<head></head>",
+                           "<body>",
+                           "it all happens in the console.",
+                           '<script src="/'+path.basename(pako_loader_fn)+'"></script>',
+                           "</body>",
+                           "</html>",
+                           ].join("\n");
 
+                fs.writeFileSync(pako_html_fn,html);
+
+                app.get("/", function(req,res){
+                    res.send(html);
+                });
                 app.use("/"+path.basename(jszip_filename), express.static(jszip_filename));
                 app.use("/"+path.basename(pako_loader_fn), express.static(pako_loader_fn));
-                app.get("/", express.static(pako_html_fn));
+
 
                 var listener = app.listen(3000, function() {
                     var url =  'http://'+hostname+':' + listener.address().port + "/";

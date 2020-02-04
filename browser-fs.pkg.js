@@ -11378,10 +11378,169 @@ module.exports = typeof setImmediate === 'function' ? setImmediate :
 })($N,$N[$E],$N[$E]);return $N[$E];})({},'exports');
 
 
-/*jszip-utils.min.js*/
+/*jszip-utils.js*/
 $N.JSUtils=(function($N,$E){$N[$E]={};(function(module,exports,window){
 /* jshint ignore:start */
-!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.JSZipUtils=e():"undefined"!=typeof global?global.JSZipUtils=e():"undefined"!=typeof self&&(self.JSZipUtils=e())}(function(){return function o(i,f,u){function s(n,e){if(!f[n]){if(!i[n]){var t="function"==typeof require&&require;if(!e&&t)return t(n,!0);if(a)return a(n,!0);throw new Error("Cannot find module '"+n+"'")}var r=f[n]={exports:{}};i[n][0].call(r.exports,function(e){var t=i[n][1][e];return s(t||e)},r,r.exports,o,i,f,u)}return f[n].exports}for(var a="function"==typeof require&&require,e=0;e<u.length;e++)s(u[e]);return s}({1:[function(e,t,n){"use strict";var u={};function r(){try{return new window.XMLHttpRequest}catch(e){}}u._getBinaryFromXHR=function(e){return e.response||e.responseText};var s="undefined"!=typeof window&&window.ActiveXObject?function(){return r()||function(){try{return new window.ActiveXObject("Microsoft.XMLHTTP")}catch(e){}}()}:r;u.getBinaryContent=function(t,n){var e,r,o,i;"function"==typeof(n=n||{})?(i=n,n={}):"function"==typeof n.callback&&(i=n.callback),i||"undefined"==typeof Promise?(r=function(e){i(null,e)},o=function(e){i(e,null)}):e=new Promise(function(e,t){r=e,o=t});try{var f=s();f.open("GET",t,!0),"responseType"in f&&(f.responseType="arraybuffer"),f.overrideMimeType&&f.overrideMimeType("text/plain; charset=x-user-defined"),f.onreadystatechange=function(e){if(4===f.readyState)if(200===f.status||0===f.status)try{r(u._getBinaryFromXHR(f))}catch(e){o(new Error(e))}else o(new Error("Ajax error for "+t+" : "+this.status+" "+this.statusText))},n.progress&&(f.onprogress=function(e){n.progress({path:t,originalEvent:e,percent:e.loaded/e.total*100,loaded:e.loaded,total:e.total})}),f.send()}catch(e){o(new Error(e),null)}return e},t.exports=u},{}]},{},[1])(1)});
+/*@preserve
+
+JSZipUtils - A collection of cross-browser utilities to go along with JSZip.
+<http://stuk.github.io/jszip-utils>
+
+(c) 2014-2019 Stuart Knightley, David Duponchel
+Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip-utils/master/LICENSE.markdown.
+
+*/
+!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.JSZipUtils=e():"undefined"!=typeof global?global.JSZipUtils=e():"undefined"!=typeof self&&(self.JSZipUtils=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+/*globals Promise */
+
+var JSZipUtils = {};
+// just use the responseText with xhr1, response with xhr2.
+// The transformation doesn't throw away high-order byte (with responseText)
+// because JSZip handles that case. If not used with JSZip, you may need to
+// do it, see https://developer.mozilla.org/En/Using_XMLHttpRequest#Handling_binary_data
+JSZipUtils._getBinaryFromXHR = function (xhr) {
+    // for xhr.responseText, the 0xFF mask is applied by JSZip
+    return xhr.response || xhr.responseText;
+};
+
+// taken from jQuery
+function createStandardXHR() {
+    try {
+        return new window.XMLHttpRequest();
+    } catch( e ) {}
+}
+
+function createActiveXHR() {
+    try {
+        return new window.ActiveXObject("Microsoft.XMLHTTP");
+    } catch( e ) {}
+}
+
+// Create the request object
+var createXHR = (typeof window !== "undefined" && window.ActiveXObject) ?
+    /* Microsoft failed to properly
+     * implement the XMLHttpRequest in IE7 (can't request local files),
+     * so we use the ActiveXObject when it is available
+     * Additionally XMLHttpRequest can be disabled in IE7/IE8 so
+     * we need a fallback.
+     */
+    function() {
+    return createStandardXHR() || createActiveXHR();
+} :
+    // For all other browsers, use the standard XMLHttpRequest object
+    createStandardXHR;
+
+
+/**
+ * @param  {string} path    The path to the resource to GET.
+ * @param  {function|{callback: function, progress: function}} options
+ * @return {Promise|undefined} If no callback is passed then a promise is returned
+ */
+JSZipUtils.getBinaryContent = function (path, options) {
+    var promise, resolve, reject;
+    var callback;
+
+    if (!options) {
+        options = {};
+    }
+
+    // backward compatible callback
+    if (typeof options === "function") {
+        callback = options;
+        options = {};
+    } else if (typeof options.callback === 'function') {
+        // callback inside options object
+        callback = options.callback;
+    }
+
+    if (!callback && typeof Promise !== "undefined") {
+        promise = new Promise(function (_resolve, _reject) {
+            resolve = _resolve;
+            reject = _reject;
+        });
+    } else {
+        resolve = function (data) { callback(null, data); };
+        reject = function (err) { callback(err, null); };
+    }
+
+    /*
+     * Here is the tricky part : getting the data.
+     * In firefox/chrome/opera/... setting the mimeType to 'text/plain; charset=x-user-defined'
+     * is enough, the result is in the standard xhr.responseText.
+     * cf https://developer.mozilla.org/En/XMLHttpRequest/Using_XMLHttpRequest#Receiving_binary_data_in_older_browsers
+     * In IE <= 9, we must use (the IE only) attribute responseBody
+     * (for binary data, its content is different from responseText).
+     * In IE 10, the 'charset=x-user-defined' trick doesn't work, only the
+     * responseType will work :
+     * http://msdn.microsoft.com/en-us/library/ie/hh673569%28v=vs.85%29.aspx#Binary_Object_upload_and_download
+     *
+     * I'd like to use jQuery to avoid this XHR madness, but it doesn't support
+     * the responseType attribute : http://bugs.jquery.com/ticket/11461
+     */
+    try {
+        var xhr = createXHR();
+
+        xhr.open('GET', path, true);
+
+        // recent browsers
+        if ("responseType" in xhr) {
+            xhr.responseType = "arraybuffer";
+        }
+
+        // older browser
+        if(xhr.overrideMimeType) {
+            xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        }
+
+        xhr.onreadystatechange = function (event) {
+            // use `xhr` and not `this`... thanks IE
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200 || xhr.status === 0) {
+                    try {
+                        resolve(JSZipUtils._getBinaryFromXHR(xhr));
+                    } catch(err) {
+                        reject(new Error(err));
+                    }
+                } else {
+                    reject(new Error("Ajax error for " + path + " : " + this.status + " " + this.statusText));
+                }
+            }
+        };
+
+        if(options.progress) {
+            xhr.onprogress = function(e) {
+                options.progress({
+                    path: path,
+                    originalEvent: e,
+                    percent: e.loaded / e.total * 100,
+                    loaded: e.loaded,
+                    total: e.total
+                });
+            };
+        }
+
+        xhr.send();
+
+    } catch (e) {
+        reject(new Error(e), null);
+    }
+
+    // returns a promise or undefined depending on whether a callback was
+    // provided
+    return promise;
+};
+
+// export
+module.exports = JSZipUtils;
+
+// enforcing Stuk's coding style
+// vim: set shiftwidth=4 softtabstop=4:
+
+},{}]},{},[1])
+(1)
+});
+;
 /* jshint ignore:end */
 })($N,$N[$E],$N[$E]);return $N[$E];})({},'exports');
 
@@ -12666,7 +12825,7 @@ return fs_JSZip;
 
 /*fs_jszip-browser.js*/
 $N.start_fs=(function($N){
-function start_fs_jszip(url,cb) {
+function start_fs_jszip(zipfile,cb) {
 
         var self = {
              ready   : false,
@@ -12674,7 +12833,7 @@ function start_fs_jszip(url,cb) {
              process : null
         };
 
-        window.JSZipUtils.getBinaryContent(url, function(err, data) {
+        function fsLoader(err, data) {
             if (err) return cb(err);
 
             window.fsJSZip(
@@ -12690,7 +12849,21 @@ function start_fs_jszip(url,cb) {
                     cb(null,self.fs,self.process);
                 }
             );
-        });
+        }
+
+        if (typeof window.JSZipUtils!== "undefined" &&
+            typeof window.JSZipUtils.getBinaryContent ==="function" &&
+            typeof zipfile === "string" &&
+            zipfile.endsWith(".zip") ) {
+
+                window.JSZipUtils.getBinaryContent(zipfile,fsLoader);
+
+        } else {
+            if (typeof zipfile==="object" && zipfile.constructor===ArrayBuffer) {
+                fsLoader(null, zipfile)
+            }
+
+        }
 
         return self;
 

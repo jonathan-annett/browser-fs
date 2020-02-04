@@ -1,6 +1,6 @@
 module.exports = function () {
 
-    function start_fs_jszip(url,cb) {
+    function start_fs_jszip(zipfile,cb) {
 
         var self = {
              ready   : false,
@@ -8,7 +8,7 @@ module.exports = function () {
              process : null
         };
 
-        window.JSZipUtils.getBinaryContent(url, function(err, data) {
+        function fsLoader(err, data) {
             if (err) return cb(err);
 
             window.fsJSZip(
@@ -24,7 +24,21 @@ module.exports = function () {
                     cb(null,self.fs,self.process);
                 }
             );
-        });
+        }
+
+        if (typeof window.JSZipUtils!== "undefined" &&
+            typeof window.JSZipUtils.getBinaryContent ==="function" &&
+            typeof zipfile === "string" &&
+            zipfile.endsWith(".zip") ) {
+
+                window.JSZipUtils.getBinaryContent(zipfile,fsLoader);
+
+        } else {
+            if (typeof zipfile==="object" && zipfile.constructor===ArrayBuffer) {
+                fsLoader(null, zipfile)
+            }
+
+        }
 
         return self;
 
