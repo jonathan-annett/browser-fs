@@ -434,9 +434,9 @@ if (process.mainModule===module) {
         pkgWrap.buildNamed(pkgs, __dirname+"/browser-fs.js",function(err,list,built,preBuilt){
 
             pkgWrap.createPakoLoader(
-                __dirname+"/browser-fs.pkg.zip",
+                __dirname+"/testdata.zip",
                 "browserFSLoaded",
-                __dirname+"/browser-fs.min.js"
+                __dirname+"/browser-fs.pkg.js"
             );
 
         });
