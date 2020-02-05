@@ -746,6 +746,20 @@ function createPakoLoader(filename,eventName) {
                 return false;
             }
 
+
+            function browserStartupCode() {
+                 window.addEventListener(
+                   "${eventName}",
+                   function(e){
+                     var fs = window.fs = e.detail.fs;
+                     var process = window.process = e.detail.process;
+                     fs.readdir("/",{recursive:true},function(err,files){
+                         document.getElementById("dir").innerHTML=files.join("<br>\n");
+                     });
+                     selfTest(function(){ });
+                 });
+            }
+
             var html = [
                        "<html>",
                        "<head></head>",
@@ -755,20 +769,8 @@ function createPakoLoader(filename,eventName) {
                        '<script>',
 
                        "\n"+selfTest.toString()+"\n",
-                       extract_fn(function () {
-                            window.addEventListener(
-                              "${eventName}",
-                              function(e){
-                                var fs = window.fs = e.detail.fs;
-                                var process = window.process = e.detail.process;
-                                fs.readdir("/",function(err,files){
-                                    document.getElementById("dir").innerHTML=files.join("<br>\n");
-                                });
-                                selfTest(function(){ });
-                            });
-                       }),
 
-
+                       extract_fn(browserStartupCode),
 
                        '</script>',
                        "</body>",
