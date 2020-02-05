@@ -8,6 +8,14 @@ module.exports = function () {
              process : null
         };
 
+        function onModLoad(mod){
+            self.fs=mod.fs;
+            self.process=mod.process;
+            self.ready=true;
+            cb(null,self.fs,self.process);
+        }
+
+
         function fsLoader(err, data) {
             if (err) return cb(err);
 
@@ -17,12 +25,18 @@ module.exports = function () {
                 window.zipFsWrap,
                 window.JSZip,
                 window.simRequire.path,
-                function(mod){
-                    self.fs=mod.fs;
-                    self.process=mod.process;
-                    self.ready=true;
-                    cb(null,self.fs,self.process);
-                }
+                onModLoad
+            );
+        }
+
+        function fsInternalLoader(zip) {
+
+            window.fsJSZip.internal(
+                self,
+                window.zipFsWrap,
+                zip,
+                window.simRequire.path,
+                onModLoad
             );
         }
 
@@ -36,6 +50,13 @@ module.exports = function () {
         } else {
             if (typeof zipfile==="object" && zipfile.constructor===ArrayBuffer) {
                 fsLoader(null, zipfile)
+            } else {
+
+                if (typeof zipfile==="object" &&
+                    typeof zipfile.files === "object" &&
+                    typeof zipfile.file === "function" ) {
+                    fsInternalLoader(zipfile);
+                }
             }
 
         }
