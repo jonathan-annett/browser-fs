@@ -720,12 +720,11 @@ function createPakoLoader(filename,eventName) {
                             window.addEventListener(
                               "${eventName}",
                               function(e){
-                                var fs = window.fs = e.details.fs;
+                                var fs = window.fs = e.detail.fs;
                                 fs.readdir("/",function(err,files){
                                     document.getElementById("dir").innerHTML=files.join("<br>\n");
                                 });
                             });
-
                        }),
 
                        '</script>',
