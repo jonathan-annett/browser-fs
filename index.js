@@ -419,7 +419,7 @@ function selfTest (cb) {
                             throw new Error ("expected Array from readdir .");
                         }
 
-                        if (dot_dir.join(",")!== root_dir(",")) {
+                        if (dot_dir.join(",")!== root_dir.join(",")) {
                             throw new Error("readdir / differs from readdir .");
                         }
 
