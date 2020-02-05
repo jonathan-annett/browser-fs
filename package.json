@@ -12,7 +12,7 @@
         "jszip": "^3.2.2",
         "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#a6d8373f1785cc632897fcd639cab0fc487c4a45",
         "jszip-utils": "^0.1.0",
-        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#a290db6aab3c77691c41049b1f0611917d71f388"
+        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#60a5e7fbc9c2e932dc8bbec495f070ad46415f30"
     },
     "devDependencies": {},
     "scripts": {},
