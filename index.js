@@ -17,7 +17,7 @@ var ECProp = function (x,v){
     var p = {};
     p[x]={enumerable:true,configurable:true};
     switch (typeof v) {
-        case 'undefined':break;
+        case 'undefined': break;
         case 'function' : p[x][v.name]=v;break;
         default : p[x].value = v;
     }
@@ -80,7 +80,6 @@ function makeSourceSwizzler(browser) {
         }
     }
 }
-
 
 makeSourceSwizzler("browser");
 makeSourceSwizzler("browser_min");
@@ -647,12 +646,9 @@ function createPakoLoader(filename,eventName) {
                         if(err){
                             return;
                         }
-
-
-                        window.dispatchEvent(new CustomEvent("${eventName}",
-                        {
+                        window.simRequire.fs=fs;
+                        window.dispatchEvent(new CustomEvent("${eventName}",{
                             detail:{zip:zip,fs:fs}
-
                         }));
 
                     });
@@ -810,7 +806,6 @@ function createPakoLoader(filename,eventName) {
     }
 }
 
-
 if (process.mainModule===module) {
 
     if (process.argv.indexOf("--build")>0) {
@@ -849,7 +844,7 @@ if (process.mainModule===module) {
                        js  : __dirname+'/fs_jszip-browser.js'
                    }
 
-                   ];
+            ];
         pkgWrap.buildNamed(pkgs, __dirname+"/browser-fs.js",function(err,list,built,preBuilt){
 
             createPakoLoader(
