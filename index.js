@@ -598,7 +598,6 @@ function createPakoLoader(filename,eventName) {
         //into createPakoLoader().
 
         function browserSuffixFn(){
-
             loadJSZip( "${filename}", function(err,zip){
                 if(err){
                     return;
@@ -727,6 +726,8 @@ function createPakoLoader(filename,eventName) {
                             });
                        }),
 
+                       selfTest.toString(),
+
                        '</script>',
                        "</body>",
                        "</html>",
@@ -737,9 +738,9 @@ function createPakoLoader(filename,eventName) {
             app.get("/", function(req,res){
                 res.send(html);
             });
+
             app.use("/"+path.basename(jszip_filename), express.static(jszip_filename));
             app.use("/"+path.basename(pako_loader_fn), express.static(pako_loader_fn));
-
 
             var listener = app.listen(3000, function() {
                 var url =  'http://'+hostname+':' + listener.address().port + "/";
@@ -753,7 +754,12 @@ function createPakoLoader(filename,eventName) {
 
         return {
             script     : loadJSZip_src+browserSuffix,
-            nodeTester : extract_fn(nodeTester,{filename:filename,eventName:eventName})+"\n"+extract_fn.toString(),
+            nodeTester :
+
+                extract_fn(nodeTester,{filename:filename,eventName:eventName})+"\n"+
+                extract_fn.toString()+"\n"+
+                selfTest.toString()+"\n",
+
             buffer     : Buffer.concat([Buffer.from(src_fixed_temp),PakoBuffer,JSZipBuffer,ZipFileBuffer])
         };
 
