@@ -754,7 +754,7 @@ function createPakoLoader(filename,eventName) {
 
         return {
             script     : loadJSZip_src+browserSuffix,
-            nodeTester : extract_fn(nodeTester,{filename:filename,eventName:eventName}),
+            nodeTester : extract_fn(nodeTester,{filename:filename,eventName:eventName})+"\n"+extract_fn.toString(),
             buffer     : Buffer.concat([Buffer.from(src_fixed_temp),PakoBuffer,JSZipBuffer,ZipFileBuffer])
         };
 
