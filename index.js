@@ -444,7 +444,7 @@ if (process.mainModule===module) {
                 __dirname+"/testdata.zip",
                 "browserFSLoaded",
                 __dirname+"/browser-fs.pkg.js",
-                JSON.parse(fs.readFileSync(path.join(path.dirname(require.resolve("jsextensions")),"src","require_simulator.json"))).pkg.src
+                JSON.parse(fs.readFileSync(path.join(path.dirname(require.resolve("jsextensions")),"require_simulator.json"))).pkg.src
 
             );
 
