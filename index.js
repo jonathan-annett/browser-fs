@@ -723,7 +723,7 @@ function createPakoLoader(filename,eventName) {
                                 var fs = window.fs = e.details.fs;
                                 fs.readdir("/",function(err,files){
                                     document.getElementById("dir").innerHTML=files.join("<br>\n");
-                                }));
+                                });
                             });
 
                        }),
