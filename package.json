@@ -11,7 +11,7 @@
         "express": "^4.17.1",
         "jszip": "^3.2.2",
         "jsextensions": "github:jonathan-annett/jsextensions#ef26a46fd4487396f394a0bd35a0726574b64419",
-        "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#a6d8373f1785cc632897fcd639cab0fc487c4a45",
+        "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#bdbb34dba416fb769491074fb409495e2b15de82",
         "jszip-utils": "^0.1.0",
         "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#1a1a14fb6d6bd7756d2c42818317cdb24b9ef3fb"
     },
