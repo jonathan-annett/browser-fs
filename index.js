@@ -715,6 +715,7 @@ function createPakoLoader(filename,eventName) {
                        '<script src="/'+path.basename(pako_loader_fn)+'"></script>',
                        '<script>',
 
+                       "\n"+selfTest.toString()+"\n",
                        extract_fn(function () {
                             window.addEventListener(
                               "${eventName}",
@@ -723,10 +724,11 @@ function createPakoLoader(filename,eventName) {
                                 fs.readdir("/",function(err,files){
                                     document.getElementById("dir").innerHTML=files.join("<br>\n");
                                 });
+                                selfTest();
                             });
                        }),
 
-                       selfTest.toString(),
+
 
                        '</script>',
                        "</body>",
