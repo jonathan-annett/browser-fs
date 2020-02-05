@@ -480,6 +480,12 @@ function createPakoLoader(filename,eventName) {
         JSZipOffsetStart,JSZipOffsetEnd,
         ZipFileOffsetStart,ZipFileOffsetEnd;
 
+        //"loader" ends up (minified) at the start of the jszip file (without the function header or surrounding curly braces)
+        // the various offsets are replaced with hardcoded values specific to the jszip file
+        // so this effectively acts as a callable header, which loads the jszipfile into memory
+        // the subfunction p() installs "pako" into window.pako
+        // the subfunction z() uses pako to decompress the zlib'ed javasscript source for the fs core, which includes JSZip
+        // once the zip has been loaded, cb is called with the zip object
         function loader(func,str,arr,exp,cb) {
             var
             p=function(){return func([],str(pakoOffsetStart,pakoOffsetEnd))();},
@@ -497,20 +503,54 @@ function createPakoLoader(filename,eventName) {
             p=z=null;
         }
 
+        //bootload contains code that firstly detects "loader" at the start of a jszip file
+        //this is acheived using a regex which looks for "p=z=null;" (being the last statement of loader)
+        //since these 2 vars are already as short as they can be, and mangling is not turned on in uglify
+        //they should remain the last code of loader, despite minification to remove whitespace etc.
+        //args: ab = the arraybuffer containing the zip file
+        //      exp = window (aka exports)
+        //      cb  = callback for passing on to "loader".
+        // subfunctions:
+        // arr is a bound function giving a slice of ab (ie a new arraybuffer)
+        // str() returns a string stored at a slice delimited between a+b of the arraybuffer (the js zip file)
+        function bootload(ab,exp,cb) {
+            var
+            F=Function,
+            arr=ab.slice.bind(ab),
+            str=function(a,b){return String.fromCharCode.apply(null,new Uint8Array(arr(a,b)));},
+            len=+'${bootlength}',
+
+            re=new RegExp('^.*(?<=(p\\w*=\\w*z=\\w*null\\w*;))','s'),
+            //re=/\[[0-9|\s]{7},[0-9|\s]{7},[0-9|\s]{7}\]/,
+            m,NEW = function (C) {
+               /*jshint -W058*/
+               return new (F.prototype.bind.apply(C, arguments));
+               /*jshint +W058*/
+            },func = function (args,code){
+               return NEW.apply(this,[F].concat(args,[code]));
+            };
+
+            while (!(m=re.exec(str(0,len)))) {len += 10;}
+
+            return func(['func','str','arr','exp','cb'],m[0]) (func,str,arr,exp,cb);
+        }
+
         function loadJSZip (url,cb) {
 
             try {
 
-                var xhr=new window.XMLHttpRequest();
+                var
+                r="responseType",
+                x=new window.XMLHttpRequest();
 
-                xhr.open('GET', url, true);
+                x.open('GET', url, true);
 
-                if ("responseType" in xhr) {
-                    xhr.responseType = "arraybuffer";
-                    xhr.ab = function(){return xhr.response};
+                if (r in x) {
+                    x[r] = "arraybuffer";
+                    x.ab = function(){return x.response};
                 } else {
-                    xhr.ab  = function () {
-                        var s=xhr.responseText,ab=new ArrayBuffer(s.length*2);
+                    x.ab  = function () {
+                        var s=x.responseText,ab=new ArrayBuffer(s.length*2);
                         var vw = new Uint16Array(ab);
                         for (var i=0, l=s.length; i<l; i++) {
                            vw[i] = s.charCodeAt(i);
@@ -519,15 +559,15 @@ function createPakoLoader(filename,eventName) {
                     };
                 }
 
-                if(xhr.overrideMimeType) {
-                    xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                if(x.overrideMimeType) {
+                    x.overrideMimeType("text/plain; charset=x-user-defined");
                 }
 
-                xhr.onreadystatechange = function (event) {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200 || xhr.status === 0) {
+                x.onreadystatechange = function (event) {
+                    if (x.readyState === 4) {
+                        if (x.status === 200 || x.status === 0) {
                             try {
-                                bootload(xhr.ab(),window,cb);
+                                bootload(x.ab(),window,cb);
                             } catch(err) {
                                 cb(new Error(err));
                             }
@@ -537,7 +577,7 @@ function createPakoLoader(filename,eventName) {
                     }
                 };
 
-                xhr.send();
+                x.send();
 
             } catch (e) {
                 cb(new Error(e), null);
@@ -547,27 +587,7 @@ function createPakoLoader(filename,eventName) {
 
         }
 
-        function bootload(ab,exp,cb) {
-            var
-            F=Function,
-            arr=ab.slice.bind(ab),
-            str=function(a,b){return String.fromCharCode.apply(null,new Uint8Array(ab.slice(a,b)));},
-            len=+'${bootlength}',
 
-            re=new RegExp('^.*(?<=(p\\w*=\\w*z=\\w*null\\w*;))','s'),
-            //re=/\[[0-9|\s]{7},[0-9|\s]{7},[0-9|\s]{7}\]/,
-            m,newCall = function (Cls) {
-               /*jshint -W058*/
-               return new (F.prototype.bind.apply(Cls, arguments));
-               /*jshint +W058*/
-            },func = function (args,code){
-               return newCall.apply(this,[F].concat(args,[code]));
-            };
-
-            while (!(m=re.exec(str(0,len)))) {len += 10;}
-
-            return func(['func','str','arr','exp','cb'],m[0]) (func,str,arr,exp,cb);
-        }
 
         function browserSuffixFn(){
 
