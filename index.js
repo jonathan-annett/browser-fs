@@ -513,6 +513,8 @@ function createPakoLoader(filename,eventName) {
         // subfunctions:
         // arr is a bound function giving a slice of ab (ie a new arraybuffer)
         // str() returns a string stored at a slice delimited between a+b of the arraybuffer (the js zip file)
+        // in practice the while loop is not really needed as
+        
         function bootload(ab,exp,cb) {
             var
             F=Function,
@@ -530,9 +532,11 @@ function createPakoLoader(filename,eventName) {
                return NEW.apply(this,[F].concat(args,[code]));
             };
 
-            while (!(m=re.exec(str(0,len)))) {len += 10;}
+            //while (!(m=re.exec(str(0,len)))) {len += 10;}
 
-            return func(['func','str','arr','exp','cb'],m[0]) (func,str,arr,exp,cb);
+            if ((m=re.exec(str(0,len)))) {
+                return func(['func','str','arr','exp','cb'],m[0]) (func,str,arr,exp,cb);
+            }
         }
 
         function loadJSZip (url,cb) {
