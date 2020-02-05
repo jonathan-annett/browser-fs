@@ -513,8 +513,7 @@ function createPakoLoader(filename,eventName) {
         // subfunctions:
         // arr is a bound function giving a slice of ab (ie a new arraybuffer)
         // str() returns a string stored at a slice delimited between a+b of the arraybuffer (the js zip file)
-        // in practice the while loop is not really needed as
-        
+        // func creates a function by invoking an array version of new Function.
         function bootload(ab,exp,cb) {
             var
             F=Function,
@@ -539,6 +538,8 @@ function createPakoLoader(filename,eventName) {
             }
         }
 
+        // load loadJSZip() fetches the jszip file from the server and opens it
+        // uses a highly customized version of code found in JSZip Utils
         function loadJSZip (url,cb) {
 
             try {
@@ -592,6 +593,9 @@ function createPakoLoader(filename,eventName) {
         }
 
 
+        //browserSuffixFn is code which ends up calling loadJSZip & bootload & loader to load the zip file.
+        //it is a template function which is updated with the appropriate filenames and eventNames as passed
+        //into createPakoLoader().
 
         function browserSuffixFn(){
 
@@ -708,15 +712,22 @@ function createPakoLoader(filename,eventName) {
                        "<html>",
                        "<head></head>",
                        "<body>",
-                       '<div id="info">loading...</div>',
+                       '<div id="dir">loading...</div>',
                        '<script src="/'+path.basename(pako_loader_fn)+'"></script>',
                        '<script>',
-                       'window.addEventListener(',
-                       '  "${eventName}",',
-                       '  function(e){',
-                       '    document.getElementById("info").innerHTML="done";',
-                       '    console.log(e);',
-                       '});',
+
+                       extract_fn(function () {
+                            window.addEventListener(
+                              "${eventName}",
+                              function(e){
+                                var fs = window.fs = e.details.fs;
+                                fs.readdir("/",function(err,files){
+                                    document.getElementById("dir").innerHTML=files.join("<br>\n");
+                                }));
+                            });
+
+                       }),
+
                        '</script>',
                        "</body>",
                        "</html>",
