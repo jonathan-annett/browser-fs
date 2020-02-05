@@ -443,7 +443,9 @@ if (process.mainModule===module) {
             pkgWrap.createPakoLoader(
                 __dirname+"/testdata.zip",
                 "browserFSLoaded",
-                __dirname+"/browser-fs.pkg.js"
+                __dirname+"/browser-fs.pkg.js",
+                JSON.parse(fs.readFileSync(path.join(path.dirname(require.resolve("jsextensions")),"src","require_simulator.json"))).pkg.src
+
             );
 
         });

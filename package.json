@@ -10,9 +10,10 @@
     "dependencies": {
         "express": "^4.17.1",
         "jszip": "^3.2.2",
+        "jsextensions": "github:jonathan-annett/jsextensions#ef26a46fd4487396f394a0bd35a0726574b64419",
         "jszip-fs-wrap": "github:jonathan-annett/jszip-fs-wrap#a6d8373f1785cc632897fcd639cab0fc487c4a45",
         "jszip-utils": "^0.1.0",
-        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#8313d0f5fc58e9689a9ce087a00c576bb2321777"
+        "simple-package-wrap": "github:jonathan-annett/simple-package-wrap#c06263c3b5e0be9253e0487558fa8383ff84e8eb"
     },
     "devDependencies": {},
     "scripts": {},
