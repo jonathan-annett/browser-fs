@@ -398,10 +398,22 @@ function selfTest (cb) {
 
 }
 
-function createPakoLoader(filename,eventName,jsZipSrc,extraModules) {
+function createPakoLoader(filename,eventName) {
     /*
+    filename - path to the zipfile to deploy
+             - this will become the root of the browser based file system.
+
+    eventName - window.addEventListener event name to notify the browser that the file system is ready
+
+
     */
     var
+
+    // build some filenames for output/temp work files
+    jszip_filename = filename.replace(/\.zip$/,'.jszip'),
+    pako_loader_fn = filename.replace(/\.zip$/,'.pako-loader.js'),
+    pako_tester_fn = filename.replace(/\.zip$/,'.pako-tester.js'),
+
 
     // nodejs mods used
     fs   = require("fs"),
@@ -409,40 +421,56 @@ function createPakoLoader(filename,eventName,jsZipSrc,extraModules) {
     zlib = require('zlib'),
     pkgWrap =require("simple-package-wrap"),
 
-    minifyJS = pkgWrap.minifyJS,
+    minifyJS   = pkgWrap.minifyJS,
     extract_fn = pkgWrap.extract_fn,
 
-    JSZipPackageFile=require.resolve("jszip"),
-    JSZipPackagePath=path.dirname(JSZipPackageFile),
-
-    //JSZipMinifiedPath= jsZipSrc || path.join(JSZipPackagePath,"..","dist","jszip.min.js"),
-    JSZipMinifiedPath= jsZipSrc || path.join(JSZipPackagePath,"..","dist","jszip.js"),
+    // get path the pako minified inflater dist file
     PakoPackageFile=require.resolve("pako"),
     PakoPackagePath=path.dirname(PakoPackageFile),
     PakoMinifiedPath=path.join(PakoPackagePath,"dist","pako_inflate.min.js"),
 
-    jszip_filename = filename.replace(/\.zip$/,'.jszip'),
-    pako_loader_fn = filename.replace(/\.zip$/,'.pako-loader.js'),
-    pako_tester_fn = filename.replace(/\.zip$/,'.pako-tester.js'),
 
-    JSZipUncompressedBuffer = fs.readFileSync(JSZipMinifiedPath);
+    // build path to the browser-fs packaged files.
+    // contains JSZip, JSZipUtils, zipFsWrap, fs_JSZip & start_fs
+    // these form the core modules needed for the browser based file system
+    JSZipMinifiedPath= __dirname+"/browser-fs.pkg.js",
 
-    if (extraModules) JSZipUncompressedBuffer =
-        Buffer.concat([JSZipUncompressedBuffer,Buffer.from(extraModules)]);
+
+    // make a single buffer out of the combined packages (add jsextensions reqiuire-sim for browser also)
+    JSZipUncompressedBuffer = Buffer.concat([
+
+        fs.readFileSync(JSZipMinifiedPath),
+
+        Buffer.from(
+
+            JSON.parse(
+                fs.readFileSync(
+                    path.join(path.dirname(require.resolve("jsextensions")),"require_simulator.json")
+                )
+            ).pkg.src
+        )
+    ]);
 
 
     var
-    loader = JSZipBootloader(
-        fs.readFileSync(PakoMinifiedPath),
-        zlib.deflateSync(JSZipUncompressedBuffer),
-        fs.readFileSync(filename));
+
+    //load the pako inflator (minified uncompressed javascript)
+    pakoLibBuffer  = fs.readFileSync(PakoMinifiedPath),
+    //deflate the browser fs files
+    jsZipLibBuffer = zlib.deflateSync(JSZipUncompressedBuffer),
+    //load the compressed zipfile that contains the root file system
+    zipFileBuffer  = fs.readFileSync(filename),
+
+    // construct the bootloader object
+    loader = JSZipBootloader(pakoLibBuffer , jsZipLibBuffer , zipFileBuffer);
 
 
+    // write the raw jszip file (contains pako,compressed fs tools code, zipfile)
     fs.writeFileSync(jszip_filename,loader.buffer);
+    //write the loader script
     fs.writeFileSync(pako_loader_fn,loader.script);
+    //write node test server to launch a browser and test the file load
     fs.writeFileSync(pako_tester_fn,loader.nodeTester);
-
-
 
 
     function JSZipBootloader(PakoBuffer,JSZipBuffer,ZipFileBuffer) {
@@ -714,7 +742,7 @@ if (process.mainModule===module) {
                    },
 
                    {
-                       mod : "JSUtils",
+                       mod : "JSZipUtils",
                        js  : path.join(path.dirname(require.resolve("jszip-utils")),"..","dist","jszip-utils.js"),
                        pkg : __dirname+"/jszip-utils.pkg.js",
                        min : __dirname+"/jszip-utils.min.js",
@@ -742,10 +770,7 @@ if (process.mainModule===module) {
 
             createPakoLoader(
                 __dirname+"/testdata.zip",
-                "browserFSLoaded",
-                __dirname+"/browser-fs.pkg.js",
-                JSON.parse(fs.readFileSync(path.join(path.dirname(require.resolve("jsextensions")),"require_simulator.json"))).pkg.src
-
+                "browserFSLoaded"
             );
 
         });
