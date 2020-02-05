@@ -812,7 +812,7 @@ if (process.mainModule===module) {
         pkgWrap.buildNamed(pkgs, __dirname+"/browser-fs.js",function(err,list,built,preBuilt){
 
             createPakoLoader(
-                __dirname+"/testdata.zip",
+                __dirname+"/jszip_test.zip",
                 "browserFSLoaded"
             );
 
