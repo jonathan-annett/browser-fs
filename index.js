@@ -29,42 +29,42 @@ function makeSourceSwizzler(browser) {
     var file_name_prop = browser+"_path";
     var cached ;
 
-    // once we have a valid cache, respond (optionally via callbacl with data)
+    // once we have a valid cache, respond (optionally via callback with data)
     var cachedProp =  ECProp( prop_name,
                               function get(cb) {
                                   return typeof cb==='function' ? cb(cached) : cached;
                               }
                       );
 
-    // first time the gerrer is acessed (or after a call to clear), we attempt to read the
+    // first time the getter is accessed (or after a call to clear), we attempt to read the
     // file from disk. read mode is based on presence of a callback
     var swizzlerProp = ECProp(
-                               prop_name,
-                               function get(cb) {
+           prop_name,
+           function get(cb) {
 
-                                   if (typeof cb==='function') {
-                                       fs.readFile( module.exports[ file_name_prop ],"utf8", function(err,text){
-                                           if (err) return cb(err);
-                                           // since there was no error, assumem the text is valid to cache
-                                           cached = text;
-                                           // swizzle out this function in favour of the cached version
-                                           delete module.exports[prop_name];
-                                           defProp(cachedProp );
-                                           // and return freshly read cache to caller via callback
-                                           return cb (undefined,cached);
-                                       });
-                                   } else {
-                                       cached = fs.readFileSync( module.exports[ file_name_prop ],"utf8");
-                                       // if we get this far, and have not thrown, the cache will updated.
+               if (typeof cb==='function') {
+                   fs.readFile( module.exports[ file_name_prop ],"utf8", function(err,text){
+                       if (err) return cb(err);
+                       // since there was no error, assume the text is valid to cache
+                       cached = text;
+                       // swizzle out this function in favour of the cached version
+                       delete module.exports[prop_name];
+                       defProp(cachedProp );
+                       // and return freshly read cache to caller via callback
+                       return cb (undefined,cached);
+                   });
+               } else {
+                   cached = fs.readFileSync( module.exports[ file_name_prop ],"utf8");
+                   // if we get this far, and have not thrown, the cache will be updated.
 
-                                       // swizzle out this function in favour of the cached version
-                                       delete module.exports[prop_name];
-                                       defProp(cachedProp );
-                                       // and return freshly read cache to caller via return
-                                       return cached;
-                                   }
-                               }
-                        );
+                   // swizzle out this function in favour of the cached version
+                   delete module.exports[prop_name];
+                   defProp(cachedProp );
+                   // and return freshly read cache to caller via return
+                   return cached;
+               }
+           }
+    );
 
     if (module.exports[prop_name]) {
         delete module.exports[prop_name];
@@ -87,7 +87,8 @@ makeSourceSwizzler("browser_min");
 
 var
 
-fs          = require("fs"),path=require("path"),
+fs          = require("fs"),
+path        = require("path"),
 jszipFsWrap = require("jszip-fs-wrap"),
 fs_JSZip    = require("./fs_jszip.js")();
 
@@ -136,7 +137,13 @@ function selfTest (cb) {
                         console.log("test_readFile passes");
                         test_writeFile(function(){
                             console.log("test_writeFile passes");
-                            cb();
+
+                            test_readdir(function(){
+                                console.log("test_readdir passes");
+
+                                cb();
+
+                            });
                         });
                     });
 
@@ -391,6 +398,38 @@ function selfTest (cb) {
                 cb(err);
 
             });
+        }
+
+        function test_readdir(cb){
+
+            fs.readdir("nosuchpathforthis",function(err,dir){
+                if (!err || dir) {
+                    throw new Error ("readdir on non existant path fails");
+                }
+
+                fs.readdir("/",function (err,root_dir){
+                    if (err) throw err;
+                    if (typeof root_dir!=='object' || root_dir.constructor !==Array) {
+                        throw new Error ("expected Array from readdir /");
+                    }
+
+                    fs.readdir(".",function (err,dot_dir){
+                        if (err) throw err;
+                        if (typeof dot_dir!=='object' || dot_dir.constructor !==Array) {
+                            throw new Error ("expected Array from readdir .");
+                        }
+
+                        if (dot_dir.join(",")!== root_dir(",")) {
+                            throw new Error("readdir / differs from readdir .");
+                        }
+
+                        cb();
+                    });
+
+                });
+
+            });
+
         }
 
 

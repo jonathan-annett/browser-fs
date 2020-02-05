@@ -12931,7 +12931,7 @@ function fs_JSZip_internal (exports,zipWrap,zip,nodePath,cb) {
                                                          // (in some cases files won't have leading slash, and may have trailing slash. true_path is normalized, zip_fn is actual fn in the zip)
                 basename  : basename,                    // "/path/to/sub"
                 dirname   : dirname,                     // "file.ext"
-                ext       : basename.split(".").pop(),   //"ext"
+                ext       : basename.split(".").pop(),   // "ext"
                 found     : find.found,                  // directory entry (if path exists in zip)
                 dir_filter: find.found && find.found.dir ? (path === "/" ? path:path + "/") : undefined,
                 error : function(err,code,errno,syscall) {
