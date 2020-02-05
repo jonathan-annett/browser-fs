@@ -1,17 +1,19 @@
 Archive:  browser-fs.pkg.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
-   999906  2020-02-05 01:01   browser-fs.pkg.json
-   421212  2020-02-05 01:01   browser-fs.pkg.js
-   172536  2020-02-05 01:01   browser-fs.min.js
-        0  2020-02-05 01:01   dependancies/
-   366667  2020-02-05 01:01   dependancies/jszip.pkg.js
-   145168  2020-02-05 01:01   dependancies/jszip.min.js
-     6196  2020-02-05 01:01   dependancies/jszip-utils.pkg.js
-     2594  2020-02-05 01:01   dependancies/jszip-utils.min.js
-    47068  2020-02-05 01:01   dependancies/fs_jszip.pkg.js
-    24101  2020-02-05 01:01   dependancies/fs_jszip.min.js
-     1888  2020-02-05 01:01   dependancies/fs_jszip-browser.pkg.js
-     1075  2020-02-05 01:01   dependancies/fs_jszip-browser.min.js
+  1137743  2020-02-05 01:17   browser-fs.pkg.json
+   462301  2020-02-05 01:17   browser-fs.pkg.js
+   191782  2020-02-05 01:17   browser-fs.min.js
+        0  2020-02-05 01:17   dependancies/
+    47067  2020-02-05 01:17   dependancies/fs_jszip.pkg.js
+    24100  2020-02-05 01:17   dependancies/fs_jszip.min.js
+   366667  2020-02-05 01:17   dependancies/jszip.pkg.js
+   145168  2020-02-05 01:17   dependancies/jszip.min.js
+     6196  2020-02-05 01:17   dependancies/jszip-utils.pkg.js
+     2594  2020-02-05 01:17   dependancies/jszip-utils.min.js
+    41281  2020-02-05 01:17   dependancies/zipFsWrap.pkg.js
+    19386  2020-02-05 01:17   dependancies/zipFsWrap.min.js
+     1890  2020-02-05 01:17   dependancies/fs_jszip-browser.pkg.js
+     1077  2020-02-05 01:17   dependancies/fs_jszip-browser.min.js
 ---------                     -------
-  2188411                     12 files
+  2447252                     14 files

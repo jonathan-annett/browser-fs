@@ -19,7 +19,7 @@ module.exports = function () {
         function fsLoader(err, data) {
             if (err) return cb(err);
 
-            window.fsJSZip(
+            window.fs_JSZip(
                 self,
                 data,
                 window.zipFsWrap,
@@ -31,7 +31,7 @@ module.exports = function () {
 
         function fsInternalLoader(zip) {
 
-            window.fsJSZip.internal(
+            window.fs_JSZip.internal(
                 self,
                 window.zipFsWrap,
                 zip,

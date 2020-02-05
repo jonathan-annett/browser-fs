@@ -421,7 +421,14 @@ if (process.mainModule===module) {
                    },
 
                    {
-                       mod : "fs_js_zip",
+                       mod : "zipFsWrap",
+                       js  : path.join(path.dirname(require.resolve("jszip-fs-wrap")),"js_zipWrap.js"),
+                       pkg : __dirname+"/zipFsWrap.pkg.js",
+                       min : __dirname+"/zipFsWrap.min.js",
+                   },
+
+                   {
+                       mod : "fs_JSZip",
                        js  : __dirname+"/fs_jszip.js"
                    },
 
