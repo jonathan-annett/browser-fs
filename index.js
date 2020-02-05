@@ -721,10 +721,11 @@ function createPakoLoader(filename,eventName) {
                               "${eventName}",
                               function(e){
                                 var fs = window.fs = e.detail.fs;
+                                var process = window.process = e.detail.process;
                                 fs.readdir("/",function(err,files){
                                     document.getElementById("dir").innerHTML=files.join("<br>\n");
                                 });
-                                selfTest();
+                                selfTest(function(){ });
                             });
                        }),
 
@@ -760,7 +761,7 @@ function createPakoLoader(filename,eventName) {
 
                 extract_fn(nodeTester,{filename:filename,eventName:eventName})+"\n"+
                 extract_fn.toString()+"\n"+
-                selfTest.toString()+"\n",
+                selfTest.toString().replace(/start\.file\(.*\);/,"tests(window.fs,window.process);")+"\n",
 
             buffer     : Buffer.concat([Buffer.from(src_fixed_temp),PakoBuffer,JSZipBuffer,ZipFileBuffer])
         };
